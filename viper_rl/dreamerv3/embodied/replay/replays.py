@@ -60,6 +60,8 @@ class UniformRelabel(generic.Generic):
         else:
             limiter = limiters.MinSize(min_size)
         assert not capacity or min_size <= capacity
+        self.add_mode = add_mode
+        self.reward_model = reward_model
         super().__init__(
             length=length,
             capacity=capacity,
@@ -70,8 +72,6 @@ class UniformRelabel(generic.Generic):
             online=online,
             chunks=chunks,
         )
-        self.reward_model = reward_model
-        self.add_mode = add_mode
         if self.add_mode == "chunk":
             self.added_seq_len = self.length - self.reward_model.seq_len_steps + 1
             self.prev_seq = defaultdict(tuple)
@@ -80,6 +80,7 @@ class UniformRelabel(generic.Generic):
             self.full_episodes = defaultdict(list)
         else:
             raise ValueError(f"Unknown add_mode: {self.add_mode}")
+
 
     def add(self, step, worker=0, load=False):
         if self.add_mode == "chunk":
